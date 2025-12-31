@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $in = implode(',', $delIds);
                         $rows = $mysqli->query("SELECT id,file_path FROM post_images WHERE id IN ($in) AND post_id = $post_id");
                         while ($r = $rows->fetch_assoc()) {
-                            @unlink(__DIR__.'/'. $r['file_path']);
+                            @unlink(dirname(__DIR__).'/'. $r['file_path']);
                         }
                         $mysqli->query("DELETE FROM post_images WHERE id IN ($in) AND post_id = $post_id");
                     }

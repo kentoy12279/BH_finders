@@ -50,18 +50,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <?php if($msg): ?><div class="alert alert-info"><?=esc($msg)?></div><?php endif; ?>
 
-  <form method="post">
+  <form method="post" id="paymentForm">
     <input type="hidden" name="booking_id" value="<?=intval($booking_id)?>">
     <div class="mb-3">
       <label>Payment provider</label>
-      <select name="provider" class="form-select">
+      <select name="provider" class="form-select" id="providerSelect">
         <option value="gcash">GCash</option>
         <option value="card">Card</option>
         <option value="test">Test (simulate)</option>
       </select>
     </div>
-    <button class="btn btn-primary">Pay Now</button>
+    <button type="button" class="btn btn-primary" onclick="handlePayment()">Pay Now</button>
   </form>
+  <script>
+    function handlePayment() {
+      const provider = document.getElementById('providerSelect').value;
+      const bookingId = <?=intval($booking_id)?>;
+      if (provider === 'gcash') {
+        // Redirect to GCash app or web
+        window.location.href = 'gcash://pay?amount=<?=number_format($booking['total_price'],2)?>&booking=' + bookingId;
+      } else if (provider === 'card') {
+        // Redirect to card payment page
+        window.location.href = 'card_payment.php?id=' + bookingId;
+      } else {
+        // Submit form for test
+        document.getElementById('paymentForm').submit();
+      }
+    }
+  </script>
 </div>
 </body>
 </html>
