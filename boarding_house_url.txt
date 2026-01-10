@@ -1,7 +1,0 @@
-Boarding House Management System URL:
-http://192.168.1.38/BH/login.php
-
-Instructions:
-1. Ensure your mobile device is connected to the same Wi-Fi network as your laptop.
-2. Open your mobile browser and paste this URL.
-3. The system will load and run on your mobile device.
