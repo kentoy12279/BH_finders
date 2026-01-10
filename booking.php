@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$guest_name || !$guest_email || !$guest_contact) {
         $msg = 'Please provide name, email, and contact.';
     } else {
-        // Check if already booked today
+        // Check if fully booked today
         $today = date('Y-m-d');
         $chk = $mysqli->prepare("
             SELECT COUNT(*) AS c
@@ -52,8 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cnt = intval($chk->get_result()->fetch_assoc()['c'] ?? 0);
         $chk->close();
 
-        if ($cnt > 0) {
-            $msg = 'This unit is already booked for today.';
+        $room_count = intval($post['room_count'] ?? 1);
+        if ($cnt >= $room_count) {
+            $msg = 'This unit is fully booked for today.';
         } else {
             $total_price = round(floatval($post['price']), 2);
 
@@ -105,11 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>Book <?= esc($post['title']) ?></title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/student-dashboard.css">
 </head>
 <body class="p-4">
 <div class="container col-md-6">
 
-    <a href="view_post.php?id=<?= intval($post_id) ?>" class="btn btn-sm btn-link">Back</a>
+    <a href="view_post.php?id=<?= intval($post_id) ?>" class="back-btn">Back</a>
 
     <h4>Book: <?= esc($post['title']) ?></h4>
     <p class="text-muted">Owner: <?= esc($post['owner_name']) ?></p>

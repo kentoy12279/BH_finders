@@ -11,7 +11,8 @@ A PHP-based web application for managing boarding house bookings, user interacti
 - **Post Management**: Owners can create, edit, and delete property posts; students can view and interact with posts.
 - **Payment Integration**: Support for card payments and booking payments.
 - **AJAX Functionality**: Dynamic updates for inbox and other interactive elements.
-- **Mobile Integration**: Includes React Native dependencies for potential mobile app development.
+- **Web App**: React-based web application that can be embedded in any website.
+- **Mobile App**: React Native mobile app for Android and iOS.
 
 ## Prerequisites
 

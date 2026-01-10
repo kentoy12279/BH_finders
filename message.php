@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <textarea name="content" class="form-control" rows="6" required></textarea>
         </div>
         <button class="btn btn-primary">Send</button>
-        <a href="student-dashboard.php" class="btn btn-link">Back</a>
+        <a href="student-dashboard.php" class="back-btn">Back</a>
     </form>
 </div>
 </body>

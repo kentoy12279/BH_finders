@@ -183,6 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['reply_to']))) {
 <head>
 <meta charset="utf-8"><title>Create Post</title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/owner-dashboard.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-sA+e2Xk24wQvNfXyp9+O2Yf8Z1bCq1xD5s3wT0iPsv0=" crossorigin="" />
 <style>#map{height:300px;margin-bottom:12px}</style>
 </head>
@@ -192,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (!isset($_POST['reply_to']))) {
     <div class="col-md-8">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Create Boarding House Post</h2>
-        <a href="owner-dashboard.php" class="btn btn-sm btn-secondary">Back</a>
+        <a href="owner-dashboard.php" class="back-btn">Back</a>
       </div>
 <?php if(!empty($info)): ?><div class="alert alert-info"><?=esc($info)?></div><?php endif; ?>
 <?php if($err): ?><div class="alert alert-danger"><?=esc($err)?></div><?php endif; ?>

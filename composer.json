@@ -1,0 +1,13 @@
+{
+  "name": "boarding-house-management-system",
+  "description": "A PHP-based web application for managing boarding house bookings and user interactions.",
+  "type": "project",
+  "require": {
+    "php": "^7.4 || ^8.0"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "echo 'Heroku deployment ready'"
+    ]
+  }
+}

@@ -27,30 +27,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"><title>Register</title>
-  <link rel="stylesheet" href="css/bootstrap.min.css">
+<meta charset="UTF-8">
+<title>BH Houses | Register</title>
+<link rel="stylesheet" href="css/auth.css">
 </head>
-<body class="p-4">
-<div class="container col-md-6">
-  <h2>Register</h2>
-  <?php if($err): ?><div class="alert alert-danger"><?=esc($err)?></div><?php endif; ?>
-  <form method="post">
-    <div class="mb-3"><label class="form-label">Name</label><input required name="name" class="form-control"></div>
-    <div class="mb-3"><label class="form-label">Email</label><input required type="email" name="email" class="form-control"></div>
-    <div class="mb-3"><label class="form-label">Password</label><input required type="password" name="password" class="form-control"></div>
-    <div class="mb-3"><label class="form-label">Role</label>
-      <select name="role" class="form-select" required>
-        <option value="">Select role</option>
-        <option value="owner">Owner</option>
-        <option value="student">Student</option>
-      </select>
+
+<body>
+
+<div class="login-card">
+
+    <div class="logo">
+        <!-- Replace with your actual logo -->
+        <img src="../BH/uploads/bhlogo.jpg" alt="BH Houses">
     </div>
-    <button class="btn btn-primary">Register</button>
-    <a href="login.php" class="btn btn-link">Login</a>
-  </form>
+
+    <h2>Register</h2>
+    <div class="subtitle">Create your account to get started</div>
+
+    <?php if($err): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($err) ?></div>
+    <?php endif; ?>
+
+    <form method="post">
+        <input type="text" name="name" class="form-control" placeholder="Full Name" required>
+        <input type="email" name="email" class="form-control" placeholder="Email" required>
+        <input type="password" name="password" class="form-control" placeholder="Password" required>
+        <select name="role" class="form-control" required>
+            <option value="">Select Role</option>
+            <option value="owner">Owner</option>
+            <option value="student">Student</option>
+        </select>
+
+        <button class="btn-primary">Create Account</button>
+    </form>
+
+    <div class="footer-links">
+        Already have an account?
+        <a href="login.php">Sign In</a>
+    </div>
 </div>
-<script src="js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -34,35 +34,55 @@ $ps = $mysqli->prepare("SELECT title FROM posts WHERE id = ?"); $ps->bind_param(
 ?>
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Conversation</title><link rel="stylesheet" href="css/bootstrap.min.css"></head>
+<head>
+  <meta charset="utf-8">
+  <title>Conversation</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <style>
+    .chat-container { max-height: 600px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background-color: #f8f9fa; margin-bottom: 10px; }
+    .message { margin-bottom: 15px; }
+    .message.sent { text-align: right; }
+    .message.received { text-align: left; }
+    .message-bubble { display: inline-block; max-width: 70%; padding: 10px; border-radius: 10px; }
+    .message.sent .message-bubble { background-color: #007bff; color: white; }
+    .message.received .message-bubble { background-color: #e9ecef; color: black; }
+    .message-time { font-size: 0.8em; color: #666; margin-top: 5px; }
+    .reply-form { margin-top: 10px; }
+  </style>
+</head>
 <body class="p-4">
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Conversation about: <?= esc($post['title'] ?? '') ?></h3>
-    <div><a href="student_inbox.php" class="btn btn-sm btn-secondary">Back to Inbox</a></div>
+    <div><a href="student_inbox.php" class="back-btn">Back to Inbox</a></div>
   </div>
 
-  <div class="mb-3">
+  <div class="chat-container">
     <?php while($m = $res->fetch_assoc()): ?>
-      <div class="mb-3 p-3 border rounded <?=($m['is_resolved'] ? '' : 'bg-light')?>">
-        <div><strong>You</strong> <small class="text-muted"><?=esc($m['created_at'])?></small></div>
-        <div class="mt-2"><?=nl2br(esc($m['content']))?></div>
-        <?php if(!empty($m['owner_reply'])): ?>
-          <div class="mt-3 p-2 border-top">
-            <div><strong><?=esc($m['owner_name'])?> (owner)</strong> <small class="text-muted"><?=esc($m['created_at'])?></small></div>
-            <div class="mt-2"><?=nl2br(esc($m['owner_reply']))?></div>
-          </div>
-        <?php endif; ?>
+      <div class="message sent">
+        <div class="message-bubble">
+          <strong>You:</strong> <?= nl2br(esc($m['content'])) ?>
+        </div>
+        <div class="message-time"><?= esc($m['created_at']) ?></div>
       </div>
+      <?php if(!empty($m['owner_reply'])): ?>
+        <div class="message received">
+          <div class="message-bubble">
+            <strong><?= esc($m['owner_name']) ?> (owner):</strong> <?= nl2br(esc($m['owner_reply'])) ?>
+          </div>
+          <div class="message-time"><?= esc($m['created_at']) ?></div>
+        </div>
+      <?php endif; ?>
     <?php endwhile; ?>
   </div>
 
-  <div>
-    <h5>Send a message</h5>
+  <div class="reply-form">
     <form method="post">
-      <input type="hidden" name="post_id" value="<?=intval($post_id)?>">
-      <div class="mb-3"><textarea name="content" class="form-control" rows="4" required></textarea></div>
-      <button class="btn btn-primary">Send</button>
+      <input type="hidden" name="post_id" value="<?= intval($post_id) ?>">
+      <div class="input-group">
+        <textarea name="content" class="form-control" rows="3" placeholder="Type your message..." required></textarea>
+        <button class="btn btn-primary" type="submit">Send</button>
+      </div>
     </form>
   </div>
 </div>

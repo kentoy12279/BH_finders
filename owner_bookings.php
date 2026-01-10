@@ -52,20 +52,22 @@ $res = $stmt->get_result();
     <meta charset="utf-8">
     <title>Bookings</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/owner-dashboard.css">
 </head>
 <body class="p-4">
 <div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3>Bookings</h3>
-        <a href="owner-dashboard.php" class="btn btn-sm btn-secondary">Back</a>
+        <a href="owner-dashboard.php" class="back-btn">Back</a>
     </div>
 
     <?php if ($msg): ?>
         <div class="alert alert-info"><?= esc($msg) ?></div>
     <?php endif; ?>
 
-    <table class="table table-bordered table-striped">
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
         <thead class="table-light">
         <tr>
             <th>Post</th>
@@ -137,6 +139,7 @@ $res = $stmt->get_result();
 
         </tbody>
     </table>
+    </div>
 </div>
 </body>
 </html>

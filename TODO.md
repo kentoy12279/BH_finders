@@ -1,0 +1,6 @@
+- [ ] Delete android/ directory
+- [ ] Delete BoardingHouseApp/ directory
+- [ ] Delete www/ directory
+- [ ] Delete capacitor.config.json
+- [ ] Delete package.json
+- [ ] Delete package-lock.json

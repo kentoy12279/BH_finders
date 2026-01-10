@@ -1,10 +1,20 @@
 <?php
+session_start();
 require 'db.php';
 $post_id = intval($_GET['id'] ?? 0);
 $stmt = $mysqli->prepare("SELECT p.*, u.name AS owner_name FROM posts p JOIN users u ON p.owner_id = u.id WHERE p.id = ? AND p.status='active'");
 $stmt->bind_param('i',$post_id); $stmt->execute(); $res = $stmt->get_result();
 $post = $res->fetch_assoc(); $stmt->close();
 if (!$post) { die('Post not found.'); }
+// Check if fully booked today
+$today = date('Y-m-d');
+$chkStmt = $mysqli->prepare("SELECT COUNT(*) AS c FROM booking WHERE post_id = ? AND status IN ('pending', 'confirmed') AND DATE(created_at) = ?");
+$chkStmt->bind_param('is', $post_id, $today);
+$chkStmt->execute();
+$booked_count = intval($chkStmt->get_result()->fetch_assoc()['c']);
+$chkStmt->close();
+$is_available = $booked_count < intval($post['room_count'] ?? 1);
+
 $images = [];
 $imgStmt = $mysqli->prepare("SELECT file_path FROM post_images WHERE post_id = ? ORDER BY is_primary DESC, sort_order ASC");
 $imgStmt->bind_param('i',$post_id); $imgStmt->execute(); $ir = $imgStmt->get_result(); while($r = $ir->fetch_assoc()) $images[] = $r['file_path']; $imgStmt->close();
@@ -14,12 +24,13 @@ $imgStmt->bind_param('i',$post_id); $imgStmt->execute(); $ir = $imgStmt->get_res
 <head>
 <meta charset="utf-8"><title><?=esc($post['title'])?></title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/student-dashboard.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>#map{height:320px}</style>
 </head>
 <body class="p-4">
 <div class="container">
-  <a href="student-dashboard.php" class="btn btn-sm btn-link">Back</a>
+  <a href="student-dashboard.php" class="back-btn">Back</a>
   <h2><?=esc($post['title'])?></h2>
   <p class="text-muted">Owner: <?=esc($post['owner_name'])?></p>
   <div class="row">
@@ -38,7 +49,11 @@ $imgStmt->bind_param('i',$post_id); $imgStmt->execute(); $ir = $imgStmt->get_res
       <?php endif; endif; ?>
       <p>Contact: <?=esc($post['contact'] ?? '')?></p>
       <div class="mt-3">
-        <a class="btn btn-success" href="booking.php?post_id=<?=intval($post['id'])?>">Book this BH</a>
+        <?php if ($is_available): ?>
+          <a class="btn btn-success" href="booking.php?post_id=<?=intval($post['id'])?>">Book this BH</a>
+        <?php else: ?>
+          <button class="btn btn-secondary" disabled>Not Available (Booked for today)</button>
+        <?php endif; ?>
       </div>
     </div>
     <div class="col-md-5">

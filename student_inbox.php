@@ -54,12 +54,30 @@ $uc->bind_param('i', $student_id); $uc->execute(); $student_unread = intval($uc-
 ?>
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Inbox</title><link rel="stylesheet" href="css/bootstrap.min.css"></head>
+<head>
+  <meta charset="utf-8">
+  <title>Inbox</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/student-dashboard.css">
+  <style>
+    .chat-container { max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background-color: #f8f9fa; margin-bottom: 10px; }
+    .message { margin-bottom: 15px; }
+    .message.sent { text-align: right; }
+    .message.received { text-align: left; }
+    .message-bubble { display: inline-block; max-width: 70%; padding: 10px; border-radius: 10px; }
+    .message.sent .message-bubble { background-color: #007bff; color: white; }
+    .message.received .message-bubble { background-color: #e9ecef; color: black; }
+    .message-time { font-size: 0.8em; color: #666; margin-top: 5px; }
+    .conversation { margin-bottom: 30px; border-bottom: 1px solid #ddd; padding-bottom: 20px; }
+    .conversation-header { font-weight: bold; margin-bottom: 10px; }
+    .reply-form { margin-top: 10px; }
+  </style>
+</head>
 <body class="p-4">
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Inbox <?php if($student_unread>0): ?><span class="badge bg-danger ms-2"><?= $student_unread ?></span><?php endif; ?></h3>
-    <div><a href="student-dashboard.php" class="btn btn-sm btn-secondary">Back</a></div>
+    <div><a href="student-dashboard.php" class="back-btn">Back</a></div>
   </div>
 
   <?php if($info): ?><div class="alert alert-info"><?=esc($info)?></div><?php endif; ?>
@@ -72,36 +90,61 @@ $uc->bind_param('i', $student_id); $uc->execute(); $student_unread = intval($uc-
     </div>
   </div>
 
-  <table class="table table-bordered">
-    <thead><tr><th>Post</th><th>Owner</th><th>Last Student</th><th>Last Owner Reply</th><th>Last Activity</th><th>Action</th></tr></thead>
-    <tbody>
-      <?php while($row = $res->fetch_assoc()): ?>
-        <?php if($filter === 'unread' && intval($row['unread_count']) === 0) continue; ?>
-      <tr class="<?=($row['unresolved_count']>0 ? 'table-warning' : '')?>">
-        <td><a href="view_post.php?id=<?=intval($row['post_id'])?>"><?=esc($row['title'])?></a></td>
-        <td><?=esc($row['owner_name'])?></td>
-        <td><?=nl2br(esc($row['last_student_msg'] ?? ''))?></td>
-        <td>
-          <?php if(!empty($row['last_owner_reply'])): ?>
-            <?=nl2br(esc($row['last_owner_reply']))?>
-            <?php if(intval($row['unread_count'])>0): ?> <span class="badge bg-danger ms-1">new</span><?php endif; ?>
-          <?php else: ?>
-            <div class="text-muted">No reply yet.</div>
-          <?php endif; ?>
-        </td>
-        <td><?=esc($row['last_activity'])?></td>
-        <td>
-          <a href="student_conversation.php?post_id=<?=intval($row['post_id'])?>" class="btn btn-sm btn-outline-primary mb-1">View Conversation</a>
-          <form method="post" class="mb-1">
-            <input type="hidden" name="reply_post_id" value="<?=intval($row['post_id'])?>">
-            <textarea name="content" class="form-control mb-1" rows="2" placeholder="Quick reply..." required></textarea>
-            <button class="btn btn-sm btn-primary">Send</button>
-          </form>
-        </td>
-      </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+  <?php
+  // Group messages by post
+  $conversations = [];
+  while($row = $res->fetch_assoc()) {
+    if($filter === 'unread' && intval($row['unread_count']) === 0) continue;
+    $key = $row['post_id'];
+    if (!isset($conversations[$key])) {
+      $conversations[$key] = [
+        'post_title' => $row['title'],
+        'owner_name' => $row['owner_name'],
+        'last_student_msg' => $row['last_student_msg'],
+        'last_owner_reply' => $row['last_owner_reply'],
+        'last_activity' => $row['last_activity'],
+        'unread_count' => $row['unread_count'],
+        'unresolved_count' => $row['unresolved_count']
+      ];
+    }
+  }
+  ?>
+
+  <?php foreach($conversations as $post_id => $conv): ?>
+    <div class="conversation">
+      <div class="conversation-header">
+        Conversation with <?= esc($conv['owner_name']) ?> about: <a href="view_post.php?id=<?= intval($post_id) ?>"><?= esc($conv['post_title']) ?></a>
+        <?php if(intval($conv['unread_count'])>0): ?> <span class="badge bg-danger ms-1">new</span><?php endif; ?>
+      </div>
+      <div class="chat-container">
+        <?php if(!empty($conv['last_student_msg'])): ?>
+          <div class="message sent">
+            <div class="message-bubble">
+              <strong>You:</strong> <?= nl2br(esc($conv['last_student_msg'])) ?>
+            </div>
+            <div class="message-time"><?= esc($conv['last_activity']) ?></div>
+          </div>
+        <?php endif; ?>
+        <?php if(!empty($conv['last_owner_reply'])): ?>
+          <div class="message received">
+            <div class="message-bubble">
+              <strong><?= esc($conv['owner_name']) ?>:</strong> <?= nl2br(esc($conv['last_owner_reply'])) ?>
+            </div>
+            <div class="message-time"><?= esc($conv['last_activity']) ?></div>
+          </div>
+        <?php endif; ?>
+      </div>
+      <div class="reply-form">
+        <form method="post">
+          <input type="hidden" name="reply_post_id" value="<?= intval($post_id) ?>">
+          <div class="input-group">
+            <textarea name="content" class="form-control" rows="2" placeholder="Type your message..." required></textarea>
+            <button class="btn btn-primary" type="submit">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <?php endforeach; ?>
 </div>
 </body>
 </html>

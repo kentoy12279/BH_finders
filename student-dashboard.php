@@ -4,10 +4,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') { header('L
 $student_id = $_SESSION['user_id'];
 $uc = $mysqli->prepare("SELECT COUNT(*) AS c FROM messages WHERE student_id = ? AND owner_reply IS NOT NULL AND owner_reply <> '' AND student_read = 0");
 $uc->bind_param('i', $student_id); $uc->execute(); $student_unread = intval($uc->get_result()->fetch_assoc()['c'] ?? 0);
-$stmt = $mysqli->prepare("SELECT p.id,p.title,p.description,p.price,p.amenities, (SELECT file_path FROM post_images WHERE post_id = p.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) AS image, u.name AS owner_name FROM posts p JOIN users u ON p.owner_id = u.id WHERE p.status='active' ORDER BY p.created_at DESC");
+$stmt = $mysqli->prepare("SELECT p.id,p.title,p.description,p.price,p.amenities,p.latitude,p.longitude,p.location, (SELECT file_path FROM post_images WHERE post_id = p.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) AS image, u.name AS owner_name FROM posts p JOIN users u ON p.owner_id = u.id WHERE p.status='active' ORDER BY p.created_at DESC");
 $stmt->execute(); $res = $stmt->get_result();
 ?>
-<!doctype html><html><head><link rel="stylesheet" href="css/bootstrap.min.css"></head><body class="p-4">
+<!doctype html><html><head><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/student-dashboard.css"></head><body class="p-4">
 <div class="container">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Available Boarding Houses</h3>
@@ -44,11 +44,6 @@ $stmt->execute(); $res = $stmt->get_result();
 
             <a href="view_post.php?id=<?=intval($post['id'])?>" class="btn btn-outline-secondary btn-sm me-1">View</a>
             <a href="message.php?post_id=<?=intval($post['id'])?>" class="btn btn-primary btn-sm">Message Owner</a>
-            <?php if(!empty($post['latitude']) && !empty($post['longitude'])): ?>
-              <a class="btn btn-sm btn-link" href="https://www.google.com/maps?q=<?=urlencode($post['latitude'].','.$post['longitude'])?>" target="_blank">Open in Maps</a>
-            <?php elseif(!empty($post['location'])): ?>
-              <a class="btn btn-sm btn-link" href="https://www.google.com/maps?q=<?=urlencode($post['location'])?>" target="_blank">Open in Maps</a>
-            <?php endif; ?>
           </div>
         </div>
       </div>

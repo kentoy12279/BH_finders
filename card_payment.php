@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!doctype html>
 <html>
-<head><meta charset="utf-8"><title>Card Payment</title><link rel="stylesheet" href="css/bootstrap.min.css"></head>
+<head><meta charset="utf-8"><title>Card Payment</title><link rel="stylesheet" href="css/bootstrap.min.css"><link rel="stylesheet" href="css/student-dashboard.css"></head>
 <body class="p-4">
 <div class="container col-md-6">
-  <a href="student_bookings.php" class="btn btn-sm btn-link">Back</a>
+  <a href="student_bookings.php" class="back-btn">Back</a>
   <h4>Card Payment for Booking: <?=esc($booking['title'])?></h4>
   <p class="text-muted">Owner: <?=esc($booking['owner_name'])?></p>
   <p>Amount: <strong>₱<?=number_format($booking['total_price'],2)?></strong></p>

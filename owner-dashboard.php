@@ -11,7 +11,7 @@ $owner_id = $_SESSION['user_id'];
 /* Pending bookings for ALL posts (top badge only) */
 $pc = $mysqli->prepare("
     SELECT COUNT(*) AS c
-    FROM bookings b
+    FROM booking b
     JOIN posts p ON b.post_id = p.id
     WHERE p.owner_id = ?
       AND b.status = 'pending'
@@ -23,7 +23,7 @@ $pc->close();
 
 /* Posts list (NO booking count per post) */
 $stmt = $mysqli->prepare("
-    SELECT 
+    SELECT
         p.id,
         p.title,
         p.price,
@@ -53,6 +53,7 @@ $res = $stmt->get_result();
 <html>
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/owner-dashboard.css">
 </head>
 <body class="p-4">
 
@@ -122,9 +123,6 @@ $res = $stmt->get_result();
                 <td><?= esc($row['created_at']) ?></td>
 
                 <td>
-                    <a class="btn btn-sm btn-primary"
-                       href="view_post.php?id=<?= intval($row['id']) ?>">View</a>
-
                     <a class="btn btn-sm btn-warning"
                        href="edit_post.php?id=<?= intval($row['id']) ?>">Edit</a>
 

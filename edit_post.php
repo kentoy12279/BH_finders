@@ -1,5 +1,8 @@
 <?php
 require 'db.php';
+if (!isset($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'owner') { header('Location: login.php'); exit; }
 $owner_id = $_SESSION['user_id'];
 $post_id = intval($_GET['id'] ?? 0);
@@ -50,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $sqlRoomType = $mysqli->real_escape_string($room_type);
                 $sqlContact = $mysqli->real_escape_string($contact);
 
-                $latStr = $latitude === null ? 'NULL' : (float)$latitude;
-                $lngStr = $longitude === null ? 'NULL' : (float)$longitude;
+                $latStr = $latitude === null ? 'NULL' : $latitude;
+                $lngStr = $longitude === null ? 'NULL' : $longitude;
 
                 $q = "UPDATE posts SET title='$sql', description='$sqlD', price=$price, status='".$mysqli->real_escape_string($status)."', payment_methods='".$sqlMethods."', location='".$sqlLocation."', latitude=$latStr, longitude=$lngStr, amenities='".$sqlAmen."', room_count=$room_count, room_type='".$sqlRoomType."', contact='".$sqlContact."' WHERE id=$post_id AND owner_id=$owner_id";
                 if (!$mysqli->query($q)) throw new Exception('Update failed: '.$mysqli->error);
@@ -116,6 +119,7 @@ $csrf = $_SESSION['csrf'];
 <head>
 <meta charset="utf-8"><title>Edit Post</title>
 <link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/owner-dashboard.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>#map{height:300px;margin-bottom:12px}</style>
 </head>
@@ -123,7 +127,7 @@ $csrf = $_SESSION['csrf'];
 <div class="container col-md-8">
 <div class="d-flex justify-content-between align-items-center mb-3">
 <h2>Edit Post</h2>
-<a href="owner-dashboard.php" class="btn btn-sm btn-secondary">Back</a>
+<a href="owner-dashboard.php" class="back-btn">Back</a>
 </div>
 <?php if($err): ?><div class="alert alert-danger"><?=esc($err)?></div><?php endif; ?>
 <?php if(isset($_GET['updated'])): ?><div class="alert alert-success">Updated.</div><?php endif; ?>
