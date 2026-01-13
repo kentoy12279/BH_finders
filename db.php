@@ -3,6 +3,18 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+// If a single DATABASE_URL is provided (e.g. mysql://user:pass@host:3306/dbname), parse it for compatibility with Railway
+if (getenv('DATABASE_URL')) {
+    $dbUrl = getenv('DATABASE_URL');
+    $parts = parse_url($dbUrl);
+    if ($parts && isset($parts['scheme']) && $parts['scheme'] === 'mysql') {
+        putenv('DB_HOST='.$parts['host']);
+        putenv('DB_USER='.$parts['user']);
+        putenv('DB_PASS='.(isset($parts['pass']) ? $parts['pass'] : ''));
+        putenv('DB_NAME='.ltrim($parts['path'],'/'));
+    }
+}
+
 $DB_HOST = getenv('DB_HOST') ?: 'localhost';
 $DB_USER = getenv('DB_USER') ?: 'root';
 $DB_PASS = getenv('DB_PASS') ?: '';
