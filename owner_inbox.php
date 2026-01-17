@@ -52,7 +52,7 @@ $stmt->execute(); $res = $stmt->get_result();
   $uc = $mysqli->prepare("SELECT COUNT(*) AS c FROM messages m JOIN posts p ON m.post_id = p.id WHERE p.owner_id = ? AND (m.owner_reply IS NULL OR m.owner_reply = '') AND m.is_resolved = 0");
   $uc->bind_param('i',$owner_id); $uc->execute(); $ucn = $uc->get_result()->fetch_assoc(); $unread_count = intval($ucn['c'] ?? 0);
   ?>
-  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Owner Inbox <?php if($unread_count>0): ?><span class="badge bg-danger ms-2"><?= $unread_count ?></span><?php endif; ?></h3>
     <div><a href="owner-dashboard.php" class="btn btn-sm btn-secondary">Back</a></div>
   </div>
